@@ -1,0 +1,13 @@
+#!/usr/bin/env python
+# _*_coding:utf-8_*_
+''' 
+    * @author: Xwl_Yu.
+'''
+
+import os
+import sys
+
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(BASE_DIR)
+
