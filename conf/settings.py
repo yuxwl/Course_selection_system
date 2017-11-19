@@ -8,6 +8,7 @@ import os
 import logging
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+LOG_LEVEL = logging.INFO
 
 ACCOUNT_DATABASE = {
     'engine':'file_storage',
@@ -21,9 +22,8 @@ BASE_DATABASE = {
     'path':'%s/db' %BASE_DIR
 }
 
-LOG_LEVEL = logging.INFO
 LOG_TYPES = {
-    'system':'system.log',
+    'system':'system.log'
 }
 
 AUTHORITY = {
