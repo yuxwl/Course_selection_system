@@ -67,7 +67,7 @@ class Account(object):
             else:
                 auto_increment_id = begin_id   #账号数据不存在
 
-        self.account_id = auto_increment_id  #账号ID
+        self.account_id = auto_increment_id     #账号ID
         check_flag = self.check_user_name(auto_increment_id)    #检查用户名是否存在
         user_file = "%s/%s" %(Account.db_path,auto_increment_id)
         if not check_flag:  #用户名不存在,才创建用户
@@ -76,9 +76,7 @@ class Account(object):
             return self
         else:
             print ("User name [\033[31;1m%s\033[0m] has been registered!" %self.account_id)
-
-
-
+            return self
 
 
     def check_user_name(self,account_id):
@@ -103,6 +101,99 @@ class Account(object):
 
         return exist_flag
 
+
+    def get_account_id(self,user_name):
+        '''
+        用user_name 查询出account_id
+        :param user_name: 
+        :return: 
+        '''
+        exist_flag = False  #初始化存在标记
+        user_names_file = "%s/user_names" %Account.db_path
+        if os.path.exists(user_names_file):
+            user_names = Account.db.load_pickle_date(user_names_file)
+
+            for u_n in user_names:
+                if u_n["user_name"] == user_name:   #存在
+                    exist_flag = u_n["account_id"]
+                    return exist_flag
+        return exist_flag
+
+    def get_account_data(self,account_id):
+        '''
+        获取账号数据
+        :param account_id: 账户id
+        :return: 
+        '''
+        exist_flag = False      #初始化存在标记
+        user_file = "%s/%s" %(Account.db_path,account_id)
+        if os.path.exists(user_file):
+            account = Account.db.load_pickle_date(user_file)
+
+            account_data = {
+                "account_id":account_id,
+                "user_name":self.user_name,
+                "password":self.password,
+                "status":self.status,
+                "authority":self.authority,
+                "user_info":self.user_info
+            }
+            return account
+        return exist_flag
+
+
+    def save_data(self,account_id):
+        '''
+        保存数据到数据库
+        :param account_id: 账户id 
+        :return: 
+        '''
+        user_file = "%s/%s" %(Account.db_path,account_id)
+        Account.db.dump_pickle_data(user_file,self)     #保存账号数据
+        return True
+
+
+    def login(self):
+        '''
+        登录
+        因为用户名输入的是用户名，需要转化成account_id来验证
+        :return: 
+        '''
+        account_id = self.get_account_data(self.user_name)
+        if account_id:
+            account_data = self.get_account_data(account_id)
+            user_file = "%s/%s" %(Account.db_path,account_id)
+            if os.path.exists(user_file):
+                account = Account.db.load_pickle_date(user_file)  #获取用户账号
+
+                if account.password == self.password:       #验证密码
+                    if self.status == settings.STATUS['normal']:
+                        return account  #返回账号实例
+                    else:
+                        print ("Account locked,[\033[31;1m %s \033[0m] sign in failed !" % self.user_name)
+                else:
+                    print ("Password error,[\033[31;1m %s \033[0m] sign in failed !" %self.user_name)
+                    return False
+            else:
+                print ("Account [\033[31;1m %s \033[0m] data exception " %account_id )
+        else:
+            print ("User name [\033[31;1m %s \033[0m]" % self.user_name)
+
+
+class Admin(Account):
+    '''管理员账号'''
+
+    def mange_teacher(self):
+        '''管理学校讲师'''
+        pass
+
+    def manager_students(self):
+        '''管理学校学员'''
+        pass
+
+    def manager_benjis(self):
+        '''管理学校班级'''
+        pass
 
 
 
